@@ -1,0 +1,97 @@
+<div class="row justify-content-center" style="margin-top: 5vh">
+	<div class="col-md-10">
+		<div class="card">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-5">
+						<%=image_tag(@post.image,:size=>"350x250") if @post.image.attached? %>
+						<br><br>
+						<div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+				            <%= link_to posts_path,:class=>"btn btn-outline-dark" do %>
+				              Back
+				            <% end %>
+
+							<% if can? :update, @post %>
+					            <%= link_to edit_post_path(@post),:class=>"btn btn-outline-dark" do %>
+					              Edit
+					            <% end %>
+				            <% end %>
+
+				            <% if can? :destroy, @post %>
+					            <%= link_to post_path,method: :delete,data:{confirm:'Are you sure?'},:class=>"btn btn-outline-dark" do %>
+					              Delete
+					            <% end %>
+					        <% end %>
+
+							<% if user_signed_in? %>
+								<% if can? :create, @post %>
+						            <%= link_to new_post_path,:class=>"btn btn-outline-dark" do %>
+						              New Post
+						            <% end %>
+						        <% end %>
+						    <% end %>
+
+          				</div>
+					</div>
+					<div class="col-md-7">
+						<span class="small text-muted">Posted by
+							<% if @post.user.name? %>
+								<%= @post.user.name %>
+							<% else %>
+								<%= @post.user.email %>
+							<% end %>
+
+							<%= time_ago_in_words(@post.created_at)%> ago</span>
+						<h4><%= @post.title %></h4>
+						<span class="small text-muted">
+							<%= @post.link %>
+							<%= link_to @post.link,:target=>"_blank" do %>
+				                <i class="fas fa-external-link-alt"></i>
+				              <% end %> 
+						</span>
+						<p class="text-justify"><%= @post.body %></p>
+						<p>
+							<i class="far fa-comment"></i>
+							<%= @post.comments.count %>
+							<% if @post.comments.count > 1%>
+								Comments
+							<% else %>
+								Comment
+							<% end %>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row justify-content-center" style="margin-top: 5vh">
+	<div class="col-md-10">
+		<div class="card mb-2">
+			<div class="card-body">
+				<% if user_signed_in? %>
+				<div class="post-comments">
+	              <% @comments.each do |comment| %>
+	                <div id="comment_pane">
+	                  <%= render 'comments/comment', comment: comment %>
+	                </div>
+	              <% end %>
+
+	              <%= form_with model: [@post, @comment], remote: true do |f| %>
+	                <%= f.text_area :body,:class=>"form-control",placeholder:'Say something ...',rows:5  %>
+	                <div style="padding-top: 5px">
+	                  <%= f.submit "Comment",:class=>"btn btn-sm btn-primary", remote: true %>
+	                  <%= link_to "Back",posts_path,:class=>"btn btn-sm btn-secondary" %>
+	                </div>
+	            <% end %>
+			<% else %>
+			<p class="text-muted">Please <span>
+				<%= link_to "Login", new_user_session_path %>
+			</span> to view comments and post comment.</p>
+			<% end %>
+			</div>
+		</div>
+	</div>
+</div>	

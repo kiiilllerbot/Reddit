@@ -1,0 +1,45 @@
+<div class="row" style="margin-top: 2vh">
+  <div class="col-md-12">
+    <% @posts.each do |post| %>
+      <div class="card mb-2">
+        <div class="card-body">
+          <h4><%= link_to post.title,post,:class=>"link" %></h4>
+          <p class="text-muted">Submitted by
+            <% if post.user.name? %>
+              <%= post.user.name %>
+            <% else %>
+              <%= post.user.email %>
+            <% end %>
+            on
+            <%= post.created_at.strftime("%B, %d, %Y")%>
+          </p>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+            <%= link_to post.link,:target=>"_blank",:class=>"btn btn-outline-dark" do %>
+              Visit Link
+            <% end %>
+
+            <%= link_to like_post_path(post),:class=>"btn btn-outline-dark", method: :put do %>
+                <i class="fas fa-angle-up"></i> <%= post.get_upvotes.size %>
+            <% end %>
+
+            <%= link_to dislike_post_path(post),:class=>"btn btn-outline-dark", method: :put do %>
+                <i class="fas fa-angle-down"></i> <%= post.get_downvotes.size %>
+            <% end %>
+
+          </div>
+
+          <div class="float-right">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <% if can? :destroy, post %>
+                <%= link_to post,method: :delete, data:{confirm:'Are you sure?'},:class=>"btn btn-outline-danger" do %>
+                  Delete
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
